@@ -1,11 +1,11 @@
 import types from "../types/";
 import api from "../../services/api/";
 
-const getReposFromGithub = () => (dispatch, getState) => {
-  console.log("Hit get repos");
-  const query = "q=tetris+language:assembly&sort=stars&order=desc";
+const getReposFromGithub = (q, filters) => (dispatch, getState) => {
+  console.log("Hit get repos: ", q, filters);
+  const queryStr = `q=${q}`; //&sort=stars&order=desc
   api
-    .getReposFromGithub(query)
+    .getReposFromGithub(queryStr)
     .then(res => {
       dispatch({
         type: types.GET_REPOS_FROM_GITHUB
@@ -29,38 +29,6 @@ const getReposFromGithub = () => (dispatch, getState) => {
       });
     });
 };
-
-// const postDcmFile = file => (dispatch, getState) => {
-//   dispatch({
-//     type: types.POST_DCM_FILE_REQUEST
-//   });
-//   const study = {
-//     studyInstanceUid: file.studyInstanceUid,
-//     seriesInstanceUid: file.seriesInstanceUid
-//   };
-//   dpaApi
-//     .postDcmFile(study)
-//     .then(res => {
-//       if (res.ok) {
-//         dispatch({
-//           type: types.POST_DCM_FILE_REQUEST_SUCCESS,
-//           payload: res
-//         });
-//         dispatch(getDcmFiles());
-//       } else {
-//         dispatch({
-//           type: types.POST_DCM_FILE_REQUEST_ERROR,
-//           payload: res
-//         });
-//       }
-//     })
-//     .catch(err => {
-//       dispatch({
-//         type: types.POST_DCM_FILE_REQUEST_ERROR,
-//         payload: err
-//       });
-//     });
-// };
 
 export default {
   getReposFromGithub

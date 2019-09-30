@@ -14,14 +14,13 @@ const create = (baseURL = apiUrl) => {
     timeout: 5000
   });
 
-  const getReposFromGithub = query => api.get(`repositories?${query}`);
+  const getReposFromGithub = queryStr => api.get(`repositories?${queryStr}`);
 
   return {
     getReposFromGithub
   };
 };
 
-// Create instance of DeepPathAI API
 const api = create();
 
 export default api;

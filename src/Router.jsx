@@ -5,16 +5,15 @@ import {
   MuiThemeProvider,
   createMuiTheme
 } from "@material-ui/core/styles";
-import { Grid } from "@material-ui/core";
 import { Provider } from "react-redux";
 
-import SearchRepos from "./components/views/SearchRepos/SearchRepos";
+import Dashboard from "./components/views/Dashboard/Dashboard";
 import About from "./components/views/About/About";
 import NotFound from "./components/views/NotFound/NotFound";
 import Navbar from "./components/common/Navbar/Navbar";
+import Splash from "./components/views/Splash/Splash";
 
 import store from "./redux/store/";
-// import Footer from "./components/common/Footer/Footer";
 
 import "./index.css";
 
@@ -50,7 +49,8 @@ class AppRouter extends Component {
               <Navbar />
               <div style={{ marginTop: 50 }}>
                 <Switch>
-                  <Route path="/" exact component={SearchRepos} />
+                  <Route path="/" exact component={Splash} />
+                  <Route path="/dashboard" exact component={Dashboard} />
                   <Route path="/about" exact component={About} />
                   <Route component={NotFound} />
                 </Switch>
