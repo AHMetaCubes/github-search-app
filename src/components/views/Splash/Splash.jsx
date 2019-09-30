@@ -4,7 +4,8 @@ import {
   TextField,
   InputAdornment,
   IconButton,
-  Button
+  Button,
+  Divider
 } from "@material-ui/core";
 import { connect } from "react-redux";
 
@@ -41,7 +42,7 @@ class Splash extends Component {
         isSearchError: false
       });
       this.props.history.push("/dashboard");
-      this.props.getReposFromGithub(this.state.searchText);
+      this.props.getReposFromGithub(this.state.searchText, null); // todo: add filters
     } else {
       this.setState({
         isSearchError: true
@@ -81,7 +82,7 @@ class Splash extends Component {
             <Grid item xs={10}>
               <Grid item xs={12}>
                 <h3 style={{ textTransform: "uppercase" }}>explore</h3>
-                <hr />
+                <Divider />
               </Grid>
               <div id="searchContainer">
                 <Grid item xs={12}>
@@ -164,7 +165,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    getReposFromGithub: q => dispatch(ReduxActions.getReposFromGithub(q))
+    getReposFromGithub: (q, filters) =>
+      dispatch(ReduxActions.getReposFromGithub(q, filters))
   };
 };
 

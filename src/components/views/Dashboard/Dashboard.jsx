@@ -11,11 +11,18 @@ import {
   ListItemIcon,
   SearchIcon,
   ListItemText,
-  StarIcon,
   TextField,
   Button,
-  Grid
+  Grid,
+  Card,
+  CardActions,
+  CardContent,
+  Divider,
+  CircularProgress,
+  CardHeader
 } from "@material-ui/core";
+import { Star } from "@material-ui/icons";
+import { connect } from "react-redux";
 
 const styles = theme => ({
   menuItem: {
@@ -89,15 +96,152 @@ const DASHBOARD_VIEW_TYPES = {
 };
 
 class Dashboard extends Component {
+  navBarHeight = 50; // todo: move to utils/metrics etc.
+
   componentDidMount() {}
+
+  // https://stackoverflow.com/questions/9461621/format-a-number-as-2-5k-if-a-thousand-or-more-otherwise-900
+  nFormatter(num, digits) {
+    var si = [
+      { value: 1, symbol: "" },
+      { value: 1e3, symbol: "k" },
+      { value: 1e6, symbol: "M" }
+    ];
+    var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+    var i;
+    for (i = si.length - 1; i > 0; i--) {
+      if (num >= si[i].value) {
+        break;
+      }
+    }
+    return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
+  }
+
+  renderRepoCards = () => {
+    console.log(this.props);
+
+    if (
+      !this.props.repos.isFetching &&
+      !this.props.repos.err &&
+      this.props.repos.results
+    ) {
+      const results = this.props.repos.results;
+      if (results.items && results.items.length) {
+        return (
+          <Grid
+            container
+            style={{
+              height: window.innerHeight - this.navBarHeight,
+              width: "100%",
+              overflowY: "scroll"
+            }}
+          >
+            {results.items.map(repo => {
+              console.log(repo);
+              return (
+                <Grid
+                  item
+                  xs={4}
+                  style={{ paddingLeft: 10, paddingTop: 10 }}
+                  key={repo.id}
+                >
+                  <Card style={{ height: 200 }}>
+                    <Grid
+                      container
+                      style={{
+                        margin: 10
+                      }}
+                    >
+                      <Grid item xs={9}>
+                        <div
+                          style={{
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            fontSize: 18,
+                            fontWeight: "bold"
+                          }}
+                        >
+                          {repo.name}
+                        </div>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Grid container>
+                          <Grid
+                            item
+                            xs={3}
+                            style={{
+                              textAlign: "center"
+                            }}
+                          >
+                            <Star
+                              style={{
+                                color: "gold"
+                              }}
+                            />
+                          </Grid>
+                          <Grid
+                            item
+                            xs={8}
+                            style={{
+                              marginLeft: 5,
+                              fontSize: 10,
+                              fontWeight: "bold",
+                              textAlign: "left",
+                              marginTop: 6.5
+                            }}
+                          >
+                            {this.nFormatter(repo.stargazers_count, 1)}
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                    <CardContent
+                      style={{
+                        overflow: "hidden",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                        height: 40
+                      }}
+                    >
+                      {repo.description}
+                    </CardContent>
+                    <CardActions>
+                      <Button size="small">Learn More</Button>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              );
+            })}
+          </Grid>
+        );
+      }
+    } else {
+      return (
+        <Grid container>
+          <Grid
+            item
+            xs={12}
+            style={{
+              textAlign: "center",
+              marginTop: 200
+            }}
+          >
+            <CircularProgress size={80} />
+          </Grid>
+        </Grid>
+      );
+    }
+  };
 
   render() {
     const { classes } = this.props;
 
     return (
       <Grid container>
-        <Grid item xs={3}>
-          <Paper style={{ background: "white", height: window.innerHeight }}>
+        <Grid item xs={2}>
+          <Paper style={{ height: window.innerHeight - this.navBarHeight }}>
             <MenuList>
               <MenuItem
                 className={classes.headerMenuItem}
@@ -110,7 +254,7 @@ class Dashboard extends Component {
                   primary="Filters"
                 />
               </MenuItem>
-              <hr />
+              <Divider />
               {/* {this.sideNavMenuItems.map(item => {
                   if (this.state.activeSideMenuItem == item.title) {
                     return (
@@ -148,12 +292,27 @@ class Dashboard extends Component {
             </MenuList>
           </Paper>
         </Grid>
-        <Grid item xs={9}>
-          Test
+        <Grid item xs={10}>
+          {this.renderRepoCards()}
         </Grid>
       </Grid>
     );
   }
 }
 
-export default withStyles(styles)(Dashboard);
+const mapStateToProps = state => {
+  return state;
+};
+
+// const mapDispatchToProps = dispatch => {
+//   return {
+//     getReposFromGithub: q => dispatch(ReduxActions.getReposFromGithub(q))
+//   };
+// };
+
+const styledComponent = withStyles(styles)(Dashboard);
+
+export default connect(
+  mapStateToProps,
+  null
+)(styledComponent);

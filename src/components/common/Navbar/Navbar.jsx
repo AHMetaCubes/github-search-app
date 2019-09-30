@@ -5,9 +5,6 @@ import { withStyles } from "@material-ui/core/styles";
 import { AppBar, Tabs, Tab, Grid } from "@material-ui/core";
 
 const styles = {
-  root: {
-    // flexGrow: 1
-  },
   grow: {
     flexGrow: 1,
     color: "dodgerblue"
@@ -53,8 +50,6 @@ class Navbar extends Component {
   };
 
   render() {
-    const { classes } = this.props;
-
     const routerTabs = [
       { label: "Search Repos", route: "/" },
       { label: "About", route: "/about" }
@@ -66,7 +61,6 @@ class Navbar extends Component {
           indicatorColor="primary"
           textColor="primary"
           value={this.state.tabValue}
-          // onChange={this.handleChange} -- DONT NEED --- noice?
         >
           {routerTabs.map((tab, i) => {
             const RouterTab = withRouter(({ history }) => (
@@ -103,14 +97,14 @@ class Navbar extends Component {
     ));
 
     return (
-      <div className={classes.root} id="#main-nav">
-        <AppBar position="fixed" style={{ background: "white" }}>
-          <Grid container>
-            <Grid item xs={2}>
-              <Grid container>
-                <Grid item xs={1}>
-                  {/* xs should be 2 when in mobile, 1 is to center logo */}
-                  {/* <IconButton
+      <AppBar position="fixed" style={{ background: "white" }}>
+        <Grid container>
+          <Grid item xs={2}>
+            <Grid container>
+              {/* TODO: for mobile navDrawer */}
+              {/* <Grid item xs={1}> */}
+              {/* xs should be 2 when in mobile, 1 is to center logo */}
+              {/* <IconButton
                     className={classes.menuButton}
                     color="inherit"
                     aria-label="Menu"
@@ -118,19 +112,17 @@ class Navbar extends Component {
                 >
                     <MenuIcon />
                 </IconButton> */}
-                </Grid>
-                <Grid item xs={10}>
-                  <LogoBtn />
-                </Grid>
+              {/* </Grid> */}
+              <Grid item xs={10}>
+                <LogoBtn />
               </Grid>
             </Grid>
-            <Grid item xs={7}>
-              {renderRouterTabs()}
-            </Grid>
-            <Grid item xs={3}></Grid>
           </Grid>
-        </AppBar>
-      </div>
+          <Grid item xs={7}>
+            {renderRouterTabs()}
+          </Grid>
+        </Grid>
+      </AppBar>
     );
   }
 }

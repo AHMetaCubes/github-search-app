@@ -4,12 +4,12 @@ import api from "../../services/api/";
 const getReposFromGithub = (q, filters) => (dispatch, getState) => {
   console.log("Hit get repos: ", q, filters);
   const queryStr = `q=${q}`; //&sort=stars&order=desc
+  dispatch({
+    type: types.GET_REPOS_FROM_GITHUB
+  });
   api
     .getReposFromGithub(queryStr)
     .then(res => {
-      dispatch({
-        type: types.GET_REPOS_FROM_GITHUB
-      });
       if (res.ok) {
         const payload = res.data;
         dispatch({
