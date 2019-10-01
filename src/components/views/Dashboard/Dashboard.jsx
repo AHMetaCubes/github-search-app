@@ -105,7 +105,8 @@ class Dashboard extends Component {
   handleStarsFilterChange = e => {
     this.setState(
       {
-        starsFilter: e.target.value
+        starsFilter: e.target.value,
+        relevanceFilter: ""
       },
       () => {
         this.props.getReposFromGithub(
@@ -114,7 +115,27 @@ class Dashboard extends Component {
             stars: this.state.starsFilter,
             relevance: this.state.relevanceFilter
           },
-          this.props.search.page,
+          1,
+          null
+        );
+      }
+    );
+  };
+
+  handleRelevanceFilterChange = e => {
+    this.setState(
+      {
+        relevanceFilter: e.target.value,
+        starsFilter: ""
+      },
+      () => {
+        this.props.getReposFromGithub(
+          this.props.search.q,
+          {
+            stars: this.state.starsFilter,
+            relevance: this.state.relevanceFilter
+          },
+          1,
           null
         );
       }
@@ -431,7 +452,7 @@ class Dashboard extends Component {
                             stars: this.state.starsFilter,
                             relevance: this.state.relevanceFilter
                           },
-                          this.props.search.page,
+                          1,
                           null
                         );
                       }
@@ -453,11 +474,7 @@ class Dashboard extends Component {
                   <InputLabel>By Relevance</InputLabel>
                   <Select
                     value={this.state.relevanceFilter}
-                    onChange={e => {
-                      this.setState({
-                        relevanceFilter: e.target.value
-                      });
-                    }}
+                    onChange={this.handleRelevanceFilterChange}
                     labelWidth={100}
                   >
                     <MenuItem value="asc">Least</MenuItem>
@@ -471,9 +488,22 @@ class Dashboard extends Component {
                     cursor: "pointer"
                   }}
                   onClick={() => {
-                    this.setState({
-                      relevanceFilter: ""
-                    });
+                    this.setState(
+                      {
+                        relevanceFilter: ""
+                      },
+                      () => {
+                        this.props.getReposFromGithub(
+                          this.props.search.q,
+                          {
+                            stars: this.state.starsFilter,
+                            relevance: this.state.relevanceFilter
+                          },
+                          1,
+                          null
+                        );
+                      }
+                    );
                   }}
                 />
               </MenuItem>

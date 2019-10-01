@@ -5,8 +5,7 @@ const getReposFromGithub = (q, filters, page, lastResults) => (
   dispatch,
   getState
 ) => {
-  console.log("Hit get repos: ", q, filters, page, lastResults);
-
+  console.log(q, filters, page, lastResults);
   if (lastResults) {
     dispatch({
       type: types.LOAD_MORE_REPOS_FROM_GITHUB,
@@ -28,18 +27,20 @@ const getReposFromGithub = (q, filters, page, lastResults) => (
   });
 
   let queryStr = `q=${q}&page=${page}`;
-  if (filters) {
-    let starsFilter, relevanceFilter;
+  let filterStr;
 
+  if (filters) {
     if (filters.stars) {
-      starsFilter = `&sort=stars&order=${filters.stars}`;
-      queryStr = queryStr + starsFilter;
+      filterStr = `&sort=stars&order=${filters.stars}`;
     }
-    // if (filters.relevance) {
-    // }
-    // console.log("Query str and filter str: ", queryStr, filterStr);
+    if (filters.relevance) {
+      filterStr = `&order=${filters.relevance}`;
+    }
   }
-  console.log("Final query str: ", queryStr);
+
+  if (filterStr) {
+    queryStr = queryStr + filterStr;
+  }
 
   api
     .getReposFromGithub(queryStr)
@@ -53,7 +54,6 @@ const getReposFromGithub = (q, filters, page, lastResults) => (
           let newPayload = payload;
           newPayload.items = joinedRepos;
 
-          // concat...
           dispatch({
             type: types.LOAD_MORE_REPOS_FROM_GITHUB_SUCCESS,
             payload: newPayload
