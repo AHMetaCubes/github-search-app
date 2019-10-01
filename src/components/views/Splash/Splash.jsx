@@ -9,6 +9,7 @@ import {
 } from "@material-ui/core";
 import { connect } from "react-redux";
 
+import Footer from "../../common/Footer/Footer";
 import ReduxActions from "../../../redux/actions/index";
 
 import "./css/style.css";
@@ -84,8 +85,17 @@ class Splash extends Component {
                 <h3 style={{ textTransform: "uppercase" }}>explore</h3>
                 <Divider />
               </Grid>
-              <div id="searchContainer">
-                <Grid item xs={12}>
+              <Grid
+                container
+                style={{
+                  height: 150,
+                  padding: 15,
+                  marginTop: 40,
+                  marginBottom: 30
+                }}
+              >
+                <Grid item xs={2} />
+                <Grid item xs={8}>
                   <TextField
                     id="searchInput"
                     label="What?"
@@ -134,26 +144,39 @@ class Splash extends Component {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} style={{ textAlign: "center" }}>
-                  <Button
-                    variant="contained"
-                    onClick={this.doSearchForRepos}
-                    style={{
-                      backgroundColor: "dodgerblue",
-                      paddingLeft: 25,
-                      paddingRight: 25,
-                      fontSize: 18,
-                      width: 200,
-                      color: "white"
-                    }}
-                  >
-                    Search
-                  </Button>
-                </Grid>
-              </div>
+              </Grid>
+              <Grid item xs={12} style={{ textAlign: "center" }}>
+                <Button
+                  variant="contained"
+                  onClick={this.doSearchForRepos}
+                  style={{
+                    backgroundColor: "dodgerblue",
+                    paddingLeft: 25,
+                    paddingRight: 25,
+                    fontSize: 18,
+                    width: 200,
+                    color: "white"
+                  }}
+                >
+                  Search
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={1} />
+            <Grid item xs={10}>
+              <Grid item xs={12}>
+                <h3 style={{ textTransform: "uppercase" }}>for you</h3>
+                <Divider />
+              </Grid>
+              <Grid item xs={12} style={{ marginTop: 15 }}>
+                Coming soon!
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
+        <Footer />
       </Grid>
     );
   }
