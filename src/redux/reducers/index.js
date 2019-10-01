@@ -18,6 +18,16 @@ const repos = (
   }
 };
 
+const search = (state = { str: false }, action) => {
+  switch (action.type) {
+    case types.SET_SEARCH_QUERY_STRING:
+      return { str: action.payload };
+    default:
+      return state;
+  }
+};
+
 export default combineReducers({
-  repos
+  repos,
+  search
 });

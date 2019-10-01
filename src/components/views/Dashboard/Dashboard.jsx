@@ -17,11 +17,12 @@ import {
   Card,
   CardActions,
   CardContent,
+  Avatar,
   Divider,
   CircularProgress,
   CardHeader
 } from "@material-ui/core";
-import { Star } from "@material-ui/icons";
+import { Star, Code, Person } from "@material-ui/icons";
 import { connect } from "react-redux";
 
 const styles = theme => ({
@@ -97,6 +98,7 @@ const DASHBOARD_VIEW_TYPES = {
 
 class Dashboard extends Component {
   navBarHeight = 50; // todo: move to utils/metrics etc.
+  searchResultsBar = 60;
 
   componentDidMount() {}
 
@@ -131,7 +133,8 @@ class Dashboard extends Component {
           <Grid
             container
             style={{
-              height: window.innerHeight - this.navBarHeight,
+              height:
+                window.innerHeight - this.navBarHeight - this.searchResultsBar,
               width: "100%",
               overflowY: "scroll"
             }}
@@ -145,7 +148,13 @@ class Dashboard extends Component {
                   style={{ paddingLeft: 10, paddingTop: 10 }}
                   key={repo.id}
                 >
-                  <Card style={{ height: 200 }}>
+                  <Card
+                    style={{ height: 160 }}
+                    onClick={() => {
+                      const win = window.open(repo.svn_url, "_blank");
+                      win.focus();
+                    }}
+                  >
                     <Grid
                       container
                       style={{
@@ -175,6 +184,7 @@ class Dashboard extends Component {
                             }}
                           >
                             <Star
+                              fontSize="small"
                               style={{
                                 color: "gold"
                               }}
@@ -186,9 +196,9 @@ class Dashboard extends Component {
                             style={{
                               marginLeft: 5,
                               fontSize: 10,
+                              marginTop: 4,
                               fontWeight: "bold",
-                              textAlign: "left",
-                              marginTop: 6.5
+                              textAlign: "left"
                             }}
                           >
                             {this.nFormatter(repo.stargazers_count, 1)}
@@ -196,20 +206,79 @@ class Dashboard extends Component {
                         </Grid>
                       </Grid>
                     </Grid>
-                    <CardContent
-                      style={{
-                        overflow: "hidden",
-                        display: "-webkit-box",
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: "vertical",
-                        height: 40
-                      }}
-                    >
-                      {repo.description}
-                    </CardContent>
-                    <CardActions>
-                      <Button size="small">Learn More</Button>
-                    </CardActions>
+                    <Grid container>
+                      <Grid
+                        item
+                        xs={12}
+                        style={{
+                          padding: 10,
+                          overflow: "hidden",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: "vertical",
+                          height: 70,
+                          color: "#908b8b"
+                        }}
+                      >
+                        {repo.description}
+                      </Grid>
+                    </Grid>
+                    <Grid container style={{ padding: 10 }}>
+                      <Grid item xs={7}>
+                        <Grid container>
+                          <Grid
+                            item
+                            xs={2}
+                            style={{
+                              textAlign: "left"
+                            }}
+                          >
+                            <Code fontSize="small" />
+                          </Grid>
+                          <Grid
+                            item
+                            xs={10}
+                            style={{
+                              textAlign: "left",
+                              fontSize: 10,
+                              marginTop: 4,
+                              fontWeight: "bold"
+                            }}
+                          >
+                            {repo.language ? repo.language : "N/A"}
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                      <Grid item xs={5}>
+                        <Grid container>
+                          <Grid
+                            item
+                            xs={2}
+                            style={{
+                              textAlign: "left"
+                            }}
+                          >
+                            <Avatar
+                              style={{ height: 20, width: 20 }}
+                              src={repo.owner.avatar_url}
+                            />
+                          </Grid>
+                          <Grid
+                            item
+                            xs={9}
+                            style={{
+                              textAlign: "left",
+                              fontSize: 10,
+                              marginTop: 4,
+                              fontWeight: "bold",
+                              marginLeft: 5
+                            }}
+                          >
+                            {repo.owner.login}
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </Grid>
                   </Card>
                 </Grid>
               );
@@ -293,6 +362,27 @@ class Dashboard extends Component {
           </Paper>
         </Grid>
         <Grid item xs={10}>
+          <Grid
+            container
+            style={{
+              height: this.searchResultsBar,
+              width: "100%"
+            }}
+          >
+            <Grid item xs={12}>
+              <div style={{ padding: 18, textAlign: "center" }}>
+                {this.props.repos.results &&
+                this.props.repos.results.items &&
+                this.props.repos.results.items.length &&
+                this.props.repos.results.total_count
+                  ? `${this.props.repos.results.total_count} results for ${this.props.search.str}.`
+                  : this.props.repos.isFetching && this.props.search.str
+                  ? "Searching..."
+                  : `No results for ${this.props.search.str}.`}
+              </div>
+              <Divider />
+            </Grid>
+          </Grid>
           {this.renderRepoCards()}
         </Grid>
       </Grid>

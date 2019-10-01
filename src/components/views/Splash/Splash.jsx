@@ -58,7 +58,7 @@ class Splash extends Component {
           <Grid item xs={10}>
             <div style={{ marginTop: 50, marginBottom: 20, textAlign: "left" }}>
               <h1 style={{ textTransform: "uppercase" }}>
-                hunt for the right repo.
+                hunt for the right repository.
               </h1>
               <div style={{ color: "dodgerblue", marginTop: -20 }}>
                 <span style={{ fontWeight: 400, fontSize: 26 }}>
@@ -92,8 +92,8 @@ class Splash extends Component {
                     placeholder="Material-UI, React, Angular etc."
                     helperText={
                       this.state.isSearchError
-                        ? "Please enter a repo name or keywords."
-                        : "repo name or keywords"
+                        ? "Please enter a repository name or keywords."
+                        : "repository name or keywords"
                     }
                     fullWidth
                     type="search"
