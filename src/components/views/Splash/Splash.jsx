@@ -43,7 +43,9 @@ class Splash extends Component {
         isSearchError: false
       });
       this.props.history.push("/dashboard");
-      this.props.getReposFromGithub(this.state.searchText, null); // todo: add filters
+      // query string, filters array, page number, lastResults object (for pagination infinity scroll) -- with more time would have done backload pagination
+      // -- currently page will crash if scroll forever because too many DOM elems
+      this.props.getReposFromGithub(this.state.searchText, null, 1, null); // todo: add filters
     } else {
       this.setState({
         isSearchError: true
@@ -188,8 +190,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    getReposFromGithub: (q, filters) =>
-      dispatch(ReduxActions.getReposFromGithub(q, filters))
+    getReposFromGithub: (q, filters, page, lastResults) =>
+      dispatch(ReduxActions.getReposFromGithub(q, filters, page, lastResults))
   };
 };
 
