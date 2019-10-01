@@ -16,9 +16,10 @@ import {
   CircularProgress,
   FormControl,
   InputLabel,
+  Fab,
   Select
 } from "@material-ui/core";
-import { Star, Code, Person } from "@material-ui/icons";
+import { Star, Code, Clear } from "@material-ui/icons";
 import { connect } from "react-redux";
 import InfiniteScroll from "react-infinite-scroller";
 
@@ -107,13 +108,12 @@ class Dashboard extends Component {
         starsFilter: e.target.value
       },
       () => {
-        // sort res
         this.props.getReposFromGithub(
           this.props.search.q,
           {
             stars: this.state.starsFilter,
             relevance: this.state.relevanceFilter
-          }, // add filters
+          },
           this.props.search.page,
           null
         );
@@ -413,6 +413,31 @@ class Dashboard extends Component {
                     <MenuItem value="desc">Maximum</MenuItem>
                   </Select>
                 </FormControl>
+                <Clear
+                  style={{
+                    marginLeft: 10,
+                    color: "grey",
+                    cursor: "pointer"
+                  }}
+                  onClick={() => {
+                    this.setState(
+                      {
+                        starsFilter: ""
+                      },
+                      () => {
+                        this.props.getReposFromGithub(
+                          this.props.search.q,
+                          {
+                            stars: this.state.starsFilter,
+                            relevance: this.state.relevanceFilter
+                          },
+                          this.props.search.page,
+                          null
+                        );
+                      }
+                    );
+                  }}
+                />
               </MenuItem>
               <MenuItem
                 className={classes.headerMenuItem}
@@ -439,6 +464,18 @@ class Dashboard extends Component {
                     <MenuItem value="desc">Most</MenuItem>
                   </Select>
                 </FormControl>
+                <Clear
+                  style={{
+                    marginLeft: 10,
+                    color: "grey",
+                    cursor: "pointer"
+                  }}
+                  onClick={() => {
+                    this.setState({
+                      relevanceFilter: ""
+                    });
+                  }}
+                />
               </MenuItem>
             </MenuList>
           </Paper>
