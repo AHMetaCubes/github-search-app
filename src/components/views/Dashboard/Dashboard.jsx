@@ -8,19 +8,15 @@ import {
   MenuItem,
   MenuList,
   Paper,
-  ListItemIcon,
-  SearchIcon,
   ListItemText,
-  TextField,
-  Button,
   Grid,
   Card,
-  CardActions,
-  CardContent,
   Avatar,
   Divider,
   CircularProgress,
-  CardHeader
+  FormControl,
+  InputLabel,
+  Select
 } from "@material-ui/core";
 import { Star, Code, Person } from "@material-ui/icons";
 import { connect } from "react-redux";
@@ -94,16 +90,36 @@ const styles = theme => ({
   icon: {}
 });
 
-const DASHBOARD_VIEW_TYPES = {
-  search: "SEARCH",
-  recommended: "RECOMMENDED"
-};
-
 class Dashboard extends Component {
   navBarHeight = 50; // todo: move to utils/metrics etc.
   searchResultsBar = 60;
 
+  state = {
+    starsFilter: "",
+    relevanceFilter: ""
+  };
+
   componentDidMount() {}
+
+  handleStarsFilterChange = e => {
+    this.setState(
+      {
+        starsFilter: e.target.value
+      },
+      () => {
+        // sort res
+        this.props.getReposFromGithub(
+          this.props.search.q,
+          {
+            stars: this.state.starsFilter,
+            relevance: this.state.relevanceFilter
+          }, // add filters
+          this.props.search.page,
+          null
+        );
+      }
+    );
+  };
 
   // https://stackoverflow.com/questions/9461621/format-a-number-as-2-5k-if-a-thousand-or-more-otherwise-900
   nFormatter(num, digits) {
@@ -128,7 +144,10 @@ class Dashboard extends Component {
     if (!this.props.repos.isLoadingMore) {
       this.props.getReposFromGithub(
         this.props.search.q,
-        null, // add filters
+        {
+          stars: this.state.starsFilter,
+          relevance: this.state.relevanceFilter
+        }, // add filters
         this.props.search.page + 1,
         this.props.repos.results
       );
@@ -262,7 +281,7 @@ class Dashboard extends Component {
                               display: "-webkit-box",
                               WebkitLineClamp: 3,
                               WebkitBoxOrient: "vertical",
-                              height: 70,
+                              height: 60,
                               color: "#908b8b"
                             }}
                           >
@@ -370,46 +389,57 @@ class Dashboard extends Component {
                 disableGutters
                 disableTouchRipple
               >
-                <ListItemText
-                  className={classes.headerText}
-                  primary="Filters"
-                />
+                <ListItemText className={classes.headerText} primary="Sort" />
               </MenuItem>
               <Divider />
-              {/* {this.sideNavMenuItems.map(item => {
-                  if (this.state.activeSideMenuItem == item.title) {
-                    return (
-                      <MenuItem className={classes.activeMenuItem}>
-                        <ListItemIcon className={classes.icon}>
-                          {item.icon}
-                        </ListItemIcon>
-                        <ListItemText
-                          classes={{ primary: classes.primary }}
-                          inset
-                          primary={item.title}
-                        />
-                      </MenuItem>
-                    );
-                  } else {
-                    return (
-                      <MenuItem
-                        className={classes.menuItem}
-                        onClick={() =>
-                          this.setState({ activeSideMenuItem: item.title })
-                        }
-                      >
-                        <ListItemIcon className={classes.icon}>
-                          {item.icon}
-                        </ListItemIcon>
-                        <ListItemText
-                          classes={{ primary: classes.primary }}
-                          inset
-                          primary={item.title}
-                        />
-                      </MenuItem>
-                    );
-                  }
-                })} */}
+              <MenuItem
+                className={classes.headerMenuItem}
+                style={{ margin: 15 }}
+                disableRipple
+                disableGutters
+                disableTouchRipple
+              >
+                <FormControl
+                  variant="outlined"
+                  style={{ width: "100%", marginTop: 5 }}
+                >
+                  <InputLabel>By Stars</InputLabel>
+                  <Select
+                    value={this.state.starsFilter}
+                    onChange={this.handleStarsFilterChange}
+                    labelWidth={60}
+                  >
+                    <MenuItem value="asc">Minimum</MenuItem>
+                    <MenuItem value="desc">Maximum</MenuItem>
+                  </Select>
+                </FormControl>
+              </MenuItem>
+              <MenuItem
+                className={classes.headerMenuItem}
+                style={{ margin: 15 }}
+                disableRipple
+                disableGutters
+                disableTouchRipple
+              >
+                <FormControl
+                  variant="outlined"
+                  style={{ width: "100%", marginTop: 5 }}
+                >
+                  <InputLabel>By Relevance</InputLabel>
+                  <Select
+                    value={this.state.relevanceFilter}
+                    onChange={e => {
+                      this.setState({
+                        relevanceFilter: e.target.value
+                      });
+                    }}
+                    labelWidth={100}
+                  >
+                    <MenuItem value="asc">Least</MenuItem>
+                    <MenuItem value="desc">Most</MenuItem>
+                  </Select>
+                </FormControl>
+              </MenuItem>
             </MenuList>
           </Paper>
         </Grid>

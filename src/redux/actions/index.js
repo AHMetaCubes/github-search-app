@@ -6,6 +6,7 @@ const getReposFromGithub = (q, filters, page, lastResults) => (
   getState
 ) => {
   console.log("Hit get repos: ", q, filters, page, lastResults);
+
   if (lastResults) {
     dispatch({
       type: types.LOAD_MORE_REPOS_FROM_GITHUB,
@@ -26,7 +27,19 @@ const getReposFromGithub = (q, filters, page, lastResults) => (
     }
   });
 
-  const queryStr = `q=${q}&page=${page}`; //&sort=stars&order=desc
+  let queryStr = `q=${q}&page=${page}`;
+  if (filters) {
+    let starsFilter, relevanceFilter;
+
+    if (filters.stars) {
+      starsFilter = `&sort=stars&order=${filters.stars}`;
+      queryStr = queryStr + starsFilter;
+    }
+    // if (filters.relevance) {
+    // }
+    // console.log("Query str and filter str: ", queryStr, filterStr);
+  }
+  console.log("Final query str: ", queryStr);
 
   api
     .getReposFromGithub(queryStr)
