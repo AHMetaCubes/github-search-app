@@ -184,7 +184,7 @@ class Dashboard extends Component {
                 maxHeight:
                   window.innerWidth > 800
                     ? window.innerHeight - this.navBarHeight - 160
-                    : window.innerHeight - this.navBarHeight - 400,
+                    : window.innerHeight - this.navBarHeight - 300,
                 overflowY: "scroll"
               }}
             >
