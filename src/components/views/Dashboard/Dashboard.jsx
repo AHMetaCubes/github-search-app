@@ -1,14 +1,7 @@
 import React, { Component } from "react";
-import {
-  withStyles,
-  MuiThemeProvider,
-  createMuiTheme
-} from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
 import {
   MenuItem,
-  MenuList,
-  Paper,
-  ListItemText,
   Grid,
   Card,
   CardMedia,
@@ -21,7 +14,6 @@ import {
   FormControl,
   InputLabel,
   CardContent,
-  Fab,
   Select
 } from "@material-ui/core";
 import { Star, Code, Clear } from "@material-ui/icons";
@@ -100,8 +92,7 @@ class Dashboard extends Component {
   navBarHeight = 50; // todo: move to utils/metrics etc.
 
   state = {
-    selectedSortFilter: "",
-    relevanceFilter: "",
+    selectedSortFilter: "best-match",
     searchText: "",
     isSearchError: false
   };
@@ -149,13 +140,13 @@ class Dashboard extends Component {
 
   // https://stackoverflow.com/questions/9461621/format-a-number-as-2-5k-if-a-thousand-or-more-otherwise-900
   nFormatter(num, digits) {
-    var si = [
+    let si = [
       { value: 1, symbol: "" },
       { value: 1e3, symbol: "k" },
       { value: 1e6, symbol: "M" }
     ];
-    var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
-    var i;
+    let rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+    let i;
     for (i = si.length - 1; i > 0; i--) {
       if (num >= si[i].value) {
         break;
@@ -168,17 +159,14 @@ class Dashboard extends Component {
     if (!this.props.repos.isLoadingMore) {
       this.props.getReposFromGithub(
         this.props.search.q,
-        {
-          stars: this.state.starsFilter,
-          relevance: this.state.relevanceFilter
-        },
+        this.state.selectedSortFilter,
         this.props.search.page + 1,
         this.props.repos.results
       );
     }
   };
 
-  renderRepoCards = () => {
+  renderRepoCards() {
     if (
       !this.props.repos.isFetching &&
       !this.props.repos.err &&
@@ -186,6 +174,10 @@ class Dashboard extends Component {
     ) {
       const results = this.props.repos.results;
       if (results.items && results.items.length) {
+        // const h =
+        //   this.props.repos.results.total_count / (30 * this.props.search.page);
+        // console.log(h);
+
         return (
           <Grid container>
             <Grid
@@ -198,7 +190,15 @@ class Dashboard extends Component {
               <InfiniteScroll
                 pageStart={this.props.search.page ? this.props.search.page : 0}
                 loadMore={this.loadMoreRepos}
-                hasMore={true} // divide by total_count / item.length (30) = hasMore ..
+                hasMore={
+                  true
+                  // this.props.repos &&
+                  // this.props.repos.results &&
+                  // this.props.repos.results.total_count != "0"
+                  //   ? this.props.repos.results.total_count /
+                  //     (30 * this.props.search.page)
+                  //   : false
+                } // divide by total_count / item.length (30) = hasMore ..
                 loader={
                   <Grid container>
                     <Grid
@@ -440,7 +440,7 @@ class Dashboard extends Component {
         </Grid>
       );
     }
-  };
+  }
 
   doSearchForRepos = () => {
     if (this.state.searchText) {
@@ -456,7 +456,7 @@ class Dashboard extends Component {
     }
   };
 
-  renderSearchNav = () => {
+  renderSearchNav() {
     return (
       <Grid container style={{ padding: 10 }}>
         <Grid xs={3}>
@@ -539,11 +539,20 @@ class Dashboard extends Component {
             variant="outlined"
             style={{ width: "80%", marginLeft: "10%" }}
           >
-            <InputLabel>Sort options</InputLabel>
+            <InputLabel
+              focused={true}
+              style={{
+                fontWeight: "bold",
+                fontSize: 20,
+                color: "dodgerblue"
+              }}
+            >
+              Sort options
+            </InputLabel>
             <Select
+              labelWidth={120}
               value={this.state.selectedSortFilter}
               onChange={this.handleSelectedFilter}
-              labelWidth={60}
             >
               <MenuItem value="best-match">Best match</MenuItem>
               <MenuItem value="most-stars">Most stars</MenuItem>
@@ -555,7 +564,7 @@ class Dashboard extends Component {
         </Grid>
       </Grid>
     );
-  };
+  }
 
   render() {
     return (

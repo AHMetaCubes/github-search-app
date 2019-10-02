@@ -41,8 +41,10 @@ class Splash extends Component {
       this.setState({
         isSearchError: false
       });
+      // go to dasboard view
       this.props.history.push("/dashboard");
-      this.props.getReposFromGithub(this.state.searchText, null, 1, null); // todo: add filters
+      // initial fetch of repos
+      this.props.getReposFromGithub(this.state.searchText, null, 1, null);
     } else {
       this.setState({
         isSearchError: true
@@ -186,8 +188,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    getReposFromGithub: (q, filters, page, lastResults) =>
-      dispatch(ReduxActions.getReposFromGithub(q, filters, page, lastResults))
+    getReposFromGithub: (q, filter, page, lastResults) =>
+      dispatch(ReduxActions.getReposFromGithub(q, filter, page, lastResults))
   };
 };
 

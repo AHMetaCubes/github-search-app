@@ -1,11 +1,10 @@
 import types from "../types/";
 import api from "../../services/api/";
 
-const getReposFromGithub = (q, filters, page, lastResults) => (
+const getReposFromGithub = (q, filter, page, lastResults) => (
   dispatch,
   getState
 ) => {
-  console.log(q, filters, page, lastResults);
   if (lastResults) {
     dispatch({
       type: types.LOAD_MORE_REPOS_FROM_GITHUB,
@@ -21,25 +20,37 @@ const getReposFromGithub = (q, filters, page, lastResults) => (
     type: types.SET_SEARCH_CRITERIA,
     payload: {
       q,
-      filters,
+      filter,
       page
     }
   });
 
   let queryStr = `q=${q}&page=${page}`;
-  let filterStr;
-
-  if (filters) {
-    if (filters.stars) {
-      filterStr = `&sort=stars&order=${filters.stars}`;
+  if (filter) {
+    let filterStr;
+    switch (filter) {
+      case "best-match":
+        filterStr = null;
+        break;
+      case "most-stars":
+        filterStr = `&sort=stars&order=desc`;
+        break;
+      case "fewest-stars":
+        filterStr = `&sort=stars&order=asc`;
+        break;
+      case "most-forks":
+        filterStr = `&sort=forks&order=desc`;
+        break;
+      case "fewest-forks":
+        filterStr = `&sort=forks&order=asc`;
+        break;
+      default:
+        filterStr = null;
+        break;
     }
-    if (filters.relevance) {
-      filterStr = `&sort&order=${filters.relevance}`;
+    if (filterStr) {
+      queryStr = `${queryStr}${filterStr}`;
     }
-  }
-
-  if (filterStr) {
-    queryStr = queryStr + filterStr;
   }
 
   api
