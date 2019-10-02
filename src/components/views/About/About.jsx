@@ -10,6 +10,8 @@ import {
   CardContent
 } from "@material-ui/core";
 
+import "./css/style.css";
+
 class About extends Component {
   render() {
     return (

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-// import PropTypes from 'prop-types';
 import { Link, Redirect, withRouter } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import { AppBar, Tabs, Tab, Grid } from "@material-ui/core";
+// todo all files ... import PropTypes from 'prop-types';
 
 const styles = {
   grow: {
@@ -10,14 +10,13 @@ const styles = {
     color: "dodgerblue"
   },
   navItem: {
-    // just use css so media queries can control the responsiveness
+    // todo: css media queries
     color: "dodgerblue",
     marginRight: 40,
     marginTop: 20,
     paddingBottom: 20
   },
   navItemActive: {
-    // just use css so media queries can control the responsiveness
     color: "dodgerblue",
     borderBottom: "10px solid dodgerblue",
     marginRight: 40,
@@ -78,23 +77,43 @@ class Navbar extends Component {
       );
     };
 
-    const LogoBtn = withRouter(({ history }) => (
-      <div
-        id="navLogo"
-        onClick={() => this.handleRouteChange(history, "/", 0, true)}
-        style={{
-          color: "dodgerblue",
-          fontSize: 20,
-          fontWeight: "bold",
-          paddingTop: 10,
-          paddingLeft: 10,
-          textAlign: "center",
-          cursor: "pointer"
-        }}
-      >
-        RepoHunter
-      </div>
-    ));
+    const LogoBtn = withRouter(({ history }) => {
+      const btn =
+        window.innerWidth > 800 ? (
+          <div
+            id="navLogo"
+            onClick={() => this.handleRouteChange(history, "/", 0, true)}
+            style={{
+              color: "dodgerblue",
+              fontSize: 20,
+              fontWeight: "bold",
+              paddingTop: 10,
+              paddingLeft: 10,
+              textAlign: "center",
+              cursor: "pointer"
+            }}
+          >
+            RepoHunter
+          </div>
+        ) : (
+          <div
+            id="navLogo"
+            onClick={() => this.handleRouteChange(history, "/", 0, true)}
+            style={{
+              color: "dodgerblue",
+              fontSize: 20,
+              fontWeight: "bold",
+              paddingTop: 10,
+              paddingLeft: 10,
+              textAlign: "center",
+              cursor: "pointer"
+            }}
+          >
+            RH
+          </div>
+        );
+      return btn;
+    });
 
     return (
       <AppBar position="fixed" style={{ background: "white" }}>

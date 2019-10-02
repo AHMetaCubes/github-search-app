@@ -64,7 +64,7 @@ class Splash extends Component {
               </h1>
               <div style={{ color: "dodgerblue", marginTop: -20 }}>
                 <span style={{ fontWeight: 400, fontSize: 26 }}>
-                  Enhance your skills -
+                  Embrace your skills -
                 </span>
                 <span
                   style={{
@@ -95,8 +95,8 @@ class Splash extends Component {
                   marginBottom: 30
                 }}
               >
-                <Grid item xs={2} />
-                <Grid item xs={8}>
+                <Grid item xs={0} md={2} />
+                <Grid item xs={12} md={8}>
                   <TextField
                     id="searchInput"
                     label="What?"
@@ -164,7 +164,7 @@ class Splash extends Component {
               </Grid>
             </Grid>
           </Grid>
-          <Grid container>
+          <Grid container style={{ marginTop: 50, marginBottom: 100 }}>
             <Grid item xs={1} />
             <Grid item xs={10}>
               <Grid item xs={12}>

@@ -22,6 +22,8 @@ import InfiniteScroll from "react-infinite-scroller";
 
 import ReduxActions from "../../../redux/actions/index";
 
+import "./css/style.css";
+
 const styles = theme => ({
   menuItem: {
     "&:hover": {
@@ -174,31 +176,22 @@ class Dashboard extends Component {
     ) {
       const results = this.props.repos.results;
       if (results.items && results.items.length) {
-        // const h =
-        //   this.props.repos.results.total_count / (30 * this.props.search.page);
-        // console.log(h);
-
         return (
           <Grid container>
             <Grid
               xs={12}
               style={{
-                maxHeight: window.innerHeight - this.navBarHeight - 160,
+                maxHeight:
+                  window.innerWidth > 800
+                    ? window.innerHeight - this.navBarHeight - 160
+                    : window.innerHeight - this.navBarHeight - 400,
                 overflowY: "scroll"
               }}
             >
               <InfiniteScroll
                 pageStart={this.props.search.page ? this.props.search.page : 0}
                 loadMore={this.loadMoreRepos}
-                hasMore={
-                  true
-                  // this.props.repos &&
-                  // this.props.repos.results &&
-                  // this.props.repos.results.total_count != "0"
-                  //   ? this.props.repos.results.total_count /
-                  //     (30 * this.props.search.page)
-                  //   : false
-                } // divide by total_count / item.length (30) = hasMore ..
+                hasMore={true} // divide by total_count / item.length (const payload res is 30) = hasMore ..
                 loader={
                   <Grid container>
                     <Grid
@@ -231,7 +224,8 @@ class Dashboard extends Component {
                     return (
                       <Grid
                         item
-                        xs={6}
+                        xs={12}
+                        md={6}
                         style={{ paddingLeft: 10, paddingTop: 10 }}
                         key={repo.id}
                       >
@@ -459,32 +453,7 @@ class Dashboard extends Component {
   renderSearchNav() {
     return (
       <Grid container style={{ padding: 10 }}>
-        <Grid xs={3}>
-          <FormControl
-            margin="normal"
-            style={{
-              padding: 10,
-              overflow: "hidden",
-              display: "-webkit-box",
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: "vertical",
-              height: 45,
-              color: "#908b8b",
-              wordWrap: "break-word",
-              wordBreak: "normal"
-            }}
-          >
-            {this.props.repos.results &&
-            this.props.repos.results.items &&
-            this.props.repos.results.items.length &&
-            this.props.repos.results.total_count
-              ? `${this.props.repos.results.total_count} results for '${this.props.search.q}'.`
-              : this.props.repos.isFetching && this.props.search.q
-              ? "Searching..."
-              : `No results for '${this.props.search.q}'.`}
-          </FormControl>
-        </Grid>
-        <Grid xs={6}>
+        <Grid xs={12} md={9}>
           <TextField
             id="searchInput"
             label="What?"
@@ -533,7 +502,7 @@ class Dashboard extends Component {
             }}
           />
         </Grid>
-        <Grid xs={3}>
+        <Grid xs={12} md={3}>
           <FormControl
             margin="normal"
             variant="outlined"
@@ -684,6 +653,33 @@ class Dashboard extends Component {
         <Grid item xs={10} md={8}>
           {this.renderSearchNav()}
           <Divider />
+          <Grid container>
+            <Grid xs={12} md={8}>
+              <FormControl
+                margin="normal"
+                style={{
+                  overflow: "hidden",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 3,
+                  WebkitBoxOrient: "vertical",
+                  maxHeight: 45,
+                  color: "#908b8b",
+                  wordWrap: "break-word",
+                  wordBreak: "normal",
+                  fontSize: 14
+                }}
+              >
+                {this.props.repos.results &&
+                this.props.repos.results.items &&
+                this.props.repos.results.items.length &&
+                this.props.repos.results.total_count
+                  ? `${this.props.repos.results.total_count} results for '${this.props.search.q}'.`
+                  : this.props.repos.isFetching && this.props.search.q
+                  ? "Searching..."
+                  : `No results for '${this.props.search.q}'.`}
+              </FormControl>
+            </Grid>
+          </Grid>
           {this.renderRepoCards()}
         </Grid>
       </Grid>
