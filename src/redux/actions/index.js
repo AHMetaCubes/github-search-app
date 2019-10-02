@@ -34,7 +34,7 @@ const getReposFromGithub = (q, filters, page, lastResults) => (
       filterStr = `&sort=stars&order=${filters.stars}`;
     }
     if (filters.relevance) {
-      filterStr = `&order=${filters.relevance}`;
+      filterStr = `&sort&order=${filters.relevance}`;
     }
   }
 
@@ -45,7 +45,7 @@ const getReposFromGithub = (q, filters, page, lastResults) => (
   api
     .getReposFromGithub(queryStr)
     .then(res => {
-      if (res.ok) {
+      if (res && res.ok) {
         const payload = res.data;
 
         if (lastResults) {
@@ -66,7 +66,8 @@ const getReposFromGithub = (q, filters, page, lastResults) => (
         }
       } else {
         dispatch({
-          type: types.GET_REPOS_FROM_GITHUB_ERROR
+          type: types.GET_REPOS_FROM_GITHUB_ERROR,
+          payload: res
         });
       }
     })

@@ -10,8 +10,6 @@ import {
   CardContent
 } from "@material-ui/core";
 
-import Footer from "../../common/Footer/Footer";
-
 class About extends Component {
   render() {
     return (
@@ -20,16 +18,23 @@ class About extends Component {
         <Grid item xs={10} md={8}>
           <Card>
             <CardContent>
-              <h1 style={{ textTransform: "uppercase" }}>about the app.</h1>
+              <h3 style={{ textTransform: "uppercase" }}>about the app.</h3>
               <Divider />
-              <p style={{ margin: 15, marginTop: 15, fontSize: 18 }}>
+              <p style={{ margin: 15, fontSize: 18 }}>
                 This portal was created to help you find relevant and popular
-                repos. (And, to secure my opportunity at Travelers Haven!!)
+                repos.
+              </p>
+              <br />
+              <p style={{ margin: 15, fontSize: 18 }}>
+                And to show some via emmet extension -- Lorem ipsum dolor sit
+                amet consectetur adipisicing elit. Necessitatibus consequuntur,
+                et architecto recusandae ab quo non illum veritatis beatae! Cum
+                explicabo distinctio officia recusandae! Explicabo illo quos
+                deleniti voluptatem enim?
               </p>
             </CardContent>
           </Card>
         </Grid>
-        <Footer />
       </Grid>
     );
   }

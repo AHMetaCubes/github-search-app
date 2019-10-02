@@ -10,8 +10,9 @@ import { Provider } from "react-redux";
 import Dashboard from "./components/views/Dashboard/Dashboard";
 import About from "./components/views/About/About";
 import NotFound from "./components/views/NotFound/NotFound";
-import Navbar from "./components/common/Navbar/Navbar";
 import Splash from "./components/views/Splash/Splash";
+import Navbar from "./components/common/Navbar/Navbar";
+import Footer from "./components/common/Footer/Footer";
 
 import store from "./redux/store/";
 
@@ -56,6 +57,7 @@ class AppRouter extends Component {
                 </Switch>
               </div>
             </MuiThemeProvider>
+            <Footer />
           </div>
         </Router>
       </Provider>

@@ -11,11 +11,16 @@ import {
   ListItemText,
   Grid,
   Card,
+  CardMedia,
   Avatar,
+  TextField,
+  InputAdornment,
+  IconButton,
   Divider,
   CircularProgress,
   FormControl,
   InputLabel,
+  CardContent,
   Fab,
   Select
 } from "@material-ui/core";
@@ -93,48 +98,48 @@ const styles = theme => ({
 
 class Dashboard extends Component {
   navBarHeight = 50; // todo: move to utils/metrics etc.
-  searchResultsBar = 60;
 
   state = {
-    starsFilter: "",
-    relevanceFilter: ""
+    selectedSortFilter: "",
+    relevanceFilter: "",
+    searchText: "",
+    isSearchError: false
   };
 
-  componentDidMount() {}
+  componentDidMount() {
+    if (this.props.search.q) {
+      this.setState({
+        searchText: this.props.search.q
+      });
+    }
+  }
 
-  handleStarsFilterChange = e => {
+  handleSearchTextChange = e => {
+    if (e.target.value) {
+      this.setState({
+        isSearchError: false
+      });
+    }
+    this.setState({
+      searchText: e.target.value
+    });
+  };
+
+  handleEnterKeyPress = e => {
+    if (e.key == "Enter" || e.keyCode == 13) {
+      this.doSearchForRepos();
+    }
+  };
+
+  handleSelectedFilter = e => {
     this.setState(
       {
-        starsFilter: e.target.value,
-        relevanceFilter: ""
+        selectedSortFilter: e.target.value
       },
       () => {
         this.props.getReposFromGithub(
           this.props.search.q,
-          {
-            stars: this.state.starsFilter,
-            relevance: this.state.relevanceFilter
-          },
-          1,
-          null
-        );
-      }
-    );
-  };
-
-  handleRelevanceFilterChange = e => {
-    this.setState(
-      {
-        relevanceFilter: e.target.value,
-        starsFilter: ""
-      },
-      () => {
-        this.props.getReposFromGithub(
-          this.props.search.q,
-          {
-            stars: this.state.starsFilter,
-            relevance: this.state.relevanceFilter
-          },
+          this.state.selectedSortFilter,
           1,
           null
         );
@@ -160,15 +165,13 @@ class Dashboard extends Component {
   }
 
   loadMoreRepos = () => {
-    // query string, filters array, page number, lastResults object (for pagination infinity scroll) -- with more time would have done backload pagination
-    // -- currently page will crash if scroll forever because too many DOM elems
     if (!this.props.repos.isLoadingMore) {
       this.props.getReposFromGithub(
         this.props.search.q,
         {
           stars: this.state.starsFilter,
           relevance: this.state.relevanceFilter
-        }, // add filters
+        },
         this.props.search.page + 1,
         this.props.repos.results
       );
@@ -176,8 +179,6 @@ class Dashboard extends Component {
   };
 
   renderRepoCards = () => {
-    console.log(this.props);
-
     if (
       !this.props.repos.isFetching &&
       !this.props.repos.err &&
@@ -186,192 +187,193 @@ class Dashboard extends Component {
       const results = this.props.repos.results;
       if (results.items && results.items.length) {
         return (
-          <div
-            style={{
-              height:
-                window.innerHeight - this.navBarHeight - this.searchResultsBar,
-              width: "100%",
-              overflowY: "scroll"
-            }}
-          >
-            <InfiniteScroll
-              pageStart={this.props.search.page ? this.props.search.page : 0}
-              loadMore={this.loadMoreRepos}
-              hasMore={true}
-              loader={
-                <Grid container>
-                  <Grid
-                    item
-                    xs={12}
-                    style={{
-                      textAlign: "center",
-                      marginTop: 20,
-                      marginBottom: 10
-                    }}
-                  >
-                    loading more.
-                  </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    style={{
-                      textAlign: "center",
-                      marginBottom: 20
-                    }}
-                  >
-                    <CircularProgress color="black" size={20} />
-                  </Grid>
-                </Grid>
-              }
-              useWindow={false}
+          <Grid container>
+            <Grid
+              xs={12}
+              style={{
+                maxHeight: window.innerHeight - this.navBarHeight - 160,
+                overflowY: "scroll"
+              }}
             >
-              <Grid container>
-                {results.items.map(repo => {
-                  return (
+              <InfiniteScroll
+                pageStart={this.props.search.page ? this.props.search.page : 0}
+                loadMore={this.loadMoreRepos}
+                hasMore={true} // divide by total_count / item.length (30) = hasMore ..
+                loader={
+                  <Grid container>
                     <Grid
                       item
-                      xs={4}
-                      style={{ paddingLeft: 10, paddingTop: 10 }}
-                      key={repo.id}
+                      xs={12}
+                      style={{
+                        textAlign: "center",
+                        marginTop: 20,
+                        marginBottom: 10
+                      }}
                     >
-                      <Card
-                        style={{ height: 160, cursor: "pointer" }}
-                        onClick={() => {
-                          const win = window.open(repo.svn_url, "_blank");
-                          win.focus();
-                        }}
+                      loading more.
+                    </Grid>
+                    <Grid
+                      item
+                      xs={12}
+                      style={{
+                        textAlign: "center",
+                        marginBottom: 20
+                      }}
+                    >
+                      <CircularProgress color="black" size={20} />
+                    </Grid>
+                  </Grid>
+                }
+                useWindow={false}
+              >
+                <Grid container>
+                  {results.items.map(repo => {
+                    return (
+                      <Grid
+                        item
+                        xs={6}
+                        style={{ paddingLeft: 10, paddingTop: 10 }}
+                        key={repo.id}
                       >
-                        <Grid
-                          container
-                          style={{
-                            margin: 10
+                        <Card
+                          style={{ height: 160, cursor: "pointer" }}
+                          onClick={() => {
+                            const win = window.open(repo.svn_url, "_blank");
+                            win.focus();
                           }}
                         >
-                          <Grid item xs={9}>
-                            <div
-                              style={{
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                fontSize: 18,
-                                fontWeight: "bold"
-                              }}
-                            >
-                              {repo.name}
-                            </div>
-                          </Grid>
-                          <Grid item xs={3}>
-                            <Grid container>
-                              <Grid
-                                item
-                                xs={3}
-                                style={{
-                                  textAlign: "center"
-                                }}
-                              >
-                                <Star
-                                  fontSize="small"
-                                  style={{
-                                    color: "gold"
-                                  }}
-                                />
-                              </Grid>
-                              <Grid
-                                item
-                                xs={8}
-                                style={{
-                                  marginLeft: 5,
-                                  fontSize: 10,
-                                  marginTop: 4,
-                                  fontWeight: "bold",
-                                  textAlign: "left"
-                                }}
-                              >
-                                {this.nFormatter(repo.stargazers_count, 1)}
-                              </Grid>
-                            </Grid>
-                          </Grid>
-                        </Grid>
-                        <Grid container>
                           <Grid
-                            item
-                            xs={12}
+                            container
                             style={{
-                              padding: 10,
-                              overflow: "hidden",
-                              display: "-webkit-box",
-                              WebkitLineClamp: 3,
-                              WebkitBoxOrient: "vertical",
-                              height: 60,
-                              color: "#908b8b"
+                              margin: 10
                             }}
                           >
-                            {repo.description}
-                          </Grid>
-                        </Grid>
-                        <Grid container style={{ padding: 10 }}>
-                          <Grid item xs={7}>
-                            <Grid container>
-                              <Grid
-                                item
-                                xs={2}
+                            <Grid item xs={9}>
+                              <div
                                 style={{
-                                  textAlign: "left"
-                                }}
-                              >
-                                <Code fontSize="small" />
-                              </Grid>
-                              <Grid
-                                item
-                                xs={10}
-                                style={{
-                                  textAlign: "left",
-                                  fontSize: 10,
-                                  marginTop: 4,
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  fontSize: 18,
                                   fontWeight: "bold"
                                 }}
                               >
-                                {repo.language ? repo.language : "N/A"}
+                                {repo.name}
+                              </div>
+                            </Grid>
+                            <Grid item xs={3}>
+                              <Grid container>
+                                <Grid
+                                  item
+                                  xs={3}
+                                  style={{
+                                    textAlign: "center"
+                                  }}
+                                >
+                                  <Star
+                                    fontSize="small"
+                                    style={{
+                                      color: "gold"
+                                    }}
+                                  />
+                                </Grid>
+                                <Grid
+                                  item
+                                  xs={8}
+                                  style={{
+                                    marginLeft: 5,
+                                    fontSize: 14,
+                                    marginTop: 4,
+                                    fontWeight: "bold",
+                                    textAlign: "left"
+                                  }}
+                                >
+                                  {this.nFormatter(repo.stargazers_count, 1)}
+                                </Grid>
                               </Grid>
                             </Grid>
                           </Grid>
-                          <Grid item xs={5}>
-                            <Grid container>
-                              <Grid
-                                item
-                                xs={2}
-                                style={{
-                                  textAlign: "left"
-                                }}
-                              >
-                                <Avatar
-                                  style={{ height: 20, width: 20 }}
-                                  src={repo.owner.avatar_url}
-                                />
+                          <Grid container>
+                            <Grid
+                              item
+                              xs={12}
+                              style={{
+                                padding: 10,
+                                overflow: "hidden",
+                                display: "-webkit-box",
+                                WebkitLineClamp: 3,
+                                WebkitBoxOrient: "vertical",
+                                height: 65,
+                                color: "#908b8b"
+                              }}
+                            >
+                              {repo.description}
+                            </Grid>
+                          </Grid>
+                          <Grid container style={{ padding: 10 }}>
+                            <Grid item xs={7}>
+                              <Grid container>
+                                <Grid
+                                  item
+                                  xs={2}
+                                  style={{
+                                    textAlign: "left"
+                                  }}
+                                >
+                                  <Code fontSize="small" />
+                                </Grid>
+                                <Grid
+                                  item
+                                  xs={10}
+                                  style={{
+                                    textAlign: "left",
+                                    fontSize: 12,
+                                    marginTop: 4,
+                                    fontWeight: "bold"
+                                  }}
+                                >
+                                  {repo.language ? repo.language : "N/A"}
+                                </Grid>
                               </Grid>
-                              <Grid
-                                item
-                                xs={9}
-                                style={{
-                                  textAlign: "left",
-                                  fontSize: 10,
-                                  marginTop: 4,
-                                  fontWeight: "bold",
-                                  marginLeft: 5
-                                }}
-                              >
-                                {repo.owner.login}
+                            </Grid>
+                            <Grid item xs={5}>
+                              <Grid container>
+                                <Grid
+                                  item
+                                  xs={2}
+                                  style={{
+                                    textAlign: "left"
+                                  }}
+                                >
+                                  <Avatar
+                                    style={{ height: 20, width: 20 }}
+                                    src={repo.owner.avatar_url}
+                                  />
+                                </Grid>
+                                <Grid
+                                  item
+                                  xs={9}
+                                  style={{
+                                    textAlign: "left",
+                                    fontSize: 10,
+                                    marginTop: 4,
+                                    fontWeight: "bold",
+                                    marginLeft: 5
+                                  }}
+                                >
+                                  {repo.owner.login}
+                                </Grid>
                               </Grid>
                             </Grid>
                           </Grid>
-                        </Grid>
-                      </Card>
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </InfiniteScroll>
-          </div>
+                        </Card>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              </InfiniteScroll>
+            </Grid>
+          </Grid>
         );
       }
     } else {
@@ -390,15 +392,175 @@ class Dashboard extends Component {
         </Grid>
       );
     }
+
+    if (this.props.repos.results && this.props.repos.results.total_count == 0) {
+      return (
+        <Grid container style={{ marginTop: 100 }}>
+          <Grid item xs={1} md={2} />
+          <Grid item xs={10} md={8}>
+            <Card>
+              <CardMedia
+                style={{
+                  height: 400
+                }}
+                image="https://www.kcbi.org/wp-content/uploads/2019/03/homer-simpson.jpg"
+                title="Homer"
+              />
+              <CardContent>
+                <h3
+                  style={{
+                    textAlign: "center",
+                    padding: 15
+                  }}
+                >
+                  lol ... dumb search
+                </h3>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      );
+    }
+
+    if (this.props.repos.err) {
+      return (
+        <Grid container style={{ marginTop: 100 }}>
+          <Grid item xs={1} md={2} />
+          <Grid item xs={10} md={8}>
+            <Card>
+              <CardContent>
+                <h3 style={{ textTransform: "uppercase" }}>error.</h3>
+                <Divider />
+                <p style={{ margin: 15, fontSize: 18 }}>
+                  {JSON.stringify(this.props.repos.err)}
+                </p>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      );
+    }
+  };
+
+  doSearchForRepos = () => {
+    if (this.state.searchText) {
+      this.setState({
+        isSearchError: false
+      });
+      this.props.history.push("/dashboard");
+      this.props.getReposFromGithub(this.state.searchText, null, 1, null); // todo: add filters
+    } else {
+      this.setState({
+        isSearchError: true
+      });
+    }
+  };
+
+  renderSearchNav = () => {
+    return (
+      <Grid container style={{ padding: 10 }}>
+        <Grid xs={3}>
+          <FormControl
+            margin="normal"
+            style={{
+              padding: 10,
+              overflow: "hidden",
+              display: "-webkit-box",
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: "vertical",
+              height: 45,
+              color: "#908b8b",
+              wordWrap: "break-word",
+              wordBreak: "normal"
+            }}
+          >
+            {this.props.repos.results &&
+            this.props.repos.results.items &&
+            this.props.repos.results.items.length &&
+            this.props.repos.results.total_count
+              ? `${this.props.repos.results.total_count} results for '${this.props.search.q}'.`
+              : this.props.repos.isFetching && this.props.search.q
+              ? "Searching..."
+              : `No results for '${this.props.search.q}'.`}
+          </FormControl>
+        </Grid>
+        <Grid xs={6}>
+          <TextField
+            id="searchInput"
+            label="What?"
+            placeholder="Material-UI, React, Angular etc."
+            helperText={
+              this.state.isSearchError
+                ? "Please enter a repository name or keywords."
+                : "repository name or keywords"
+            }
+            fullWidth
+            type="search"
+            margin="normal"
+            variant="outlined"
+            inputProps={{
+              style: {
+                height: 20
+              }
+            }}
+            onKeyPress={this.handleEnterKeyPress}
+            value={this.state.searchText}
+            onChange={this.handleSearchTextChange}
+            InputProps={{
+              autoFocus: true,
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="Search."
+                    onClick={() => {
+                      this.doSearchForRepos();
+                    }}
+                  >
+                    <i className="fas fa-search"></i>
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
+            error={this.state.isSearchError}
+            InputLabelProps={{
+              shrink: true,
+              focused: true,
+              style: {
+                fontWeight: "bold",
+                fontSize: 20,
+                color: this.state.isSearchError ? "red" : "dodgerblue"
+              }
+            }}
+          />
+        </Grid>
+        <Grid xs={3}>
+          <FormControl
+            margin="normal"
+            variant="outlined"
+            style={{ width: "80%", marginLeft: "10%" }}
+          >
+            <InputLabel>Sort options</InputLabel>
+            <Select
+              value={this.state.selectedSortFilter}
+              onChange={this.handleSelectedFilter}
+              labelWidth={60}
+            >
+              <MenuItem value="best-match">Best match</MenuItem>
+              <MenuItem value="most-stars">Most stars</MenuItem>
+              <MenuItem value="fewest-stars">Fewest stars</MenuItem>
+              <MenuItem value="most-forks">Most forks</MenuItem>
+              <MenuItem value="fewest-forks">Fewest forks</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
+    );
   };
 
   render() {
-    const { classes } = this.props;
-
     return (
       <Grid container>
-        <Grid item xs={2}>
-          <Paper
+        {/* <Paper
             style={{
               height: window.innerHeight - this.navBarHeight
             }}
@@ -508,30 +670,11 @@ class Dashboard extends Component {
                 />
               </MenuItem>
             </MenuList>
-          </Paper>
-        </Grid>
-        <Grid item xs={10}>
-          <Grid
-            container
-            style={{
-              height: this.searchResultsBar,
-              width: "100%"
-            }}
-          >
-            <Grid item xs={12}>
-              <div style={{ padding: 18, textAlign: "center" }}>
-                {this.props.repos.results &&
-                this.props.repos.results.items &&
-                this.props.repos.results.items.length &&
-                this.props.repos.results.total_count
-                  ? `${this.props.repos.results.total_count} results for ${this.props.search.q}.`
-                  : this.props.repos.isFetching && this.props.search.q
-                  ? "Searching..."
-                  : `No results for ${this.props.search.q}.`}
-              </div>
-              <Divider />
-            </Grid>
-          </Grid>
+          </Paper> */}
+        <Grid item xs={1} md={2} />
+        <Grid item xs={10} md={8}>
+          {this.renderSearchNav()}
+          <Divider />
           {this.renderRepoCards()}
         </Grid>
       </Grid>

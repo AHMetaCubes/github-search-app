@@ -9,7 +9,6 @@ import {
 } from "@material-ui/core";
 import { connect } from "react-redux";
 
-import Footer from "../../common/Footer/Footer";
 import ReduxActions from "../../../redux/actions/index";
 
 import "./css/style.css";
@@ -43,8 +42,6 @@ class Splash extends Component {
         isSearchError: false
       });
       this.props.history.push("/dashboard");
-      // query string, filters array, page number, lastResults object (for pagination infinity scroll) -- with more time would have done backload pagination
-      // -- currently page will crash if scroll forever because too many DOM elems
       this.props.getReposFromGithub(this.state.searchText, null, 1, null); // todo: add filters
     } else {
       this.setState({
@@ -178,7 +175,6 @@ class Splash extends Component {
             </Grid>
           </Grid>
         </Grid>
-        <Footer />
       </Grid>
     );
   }

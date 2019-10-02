@@ -1,12 +1,5 @@
 import React, { Component } from "react";
-import {
-  Grid,
-  TextField,
-  InputAdornment,
-  IconButton,
-  Button,
-  Divider
-} from "@material-ui/core";
+import { Grid, Divider } from "@material-ui/core";
 
 class Footer extends Component {
   render() {
@@ -17,7 +10,8 @@ class Footer extends Component {
           bottom: 0,
           left: 0,
           height: 50,
-          width: "100%"
+          width: "100%",
+          backgroundColor: "white"
         }}
       >
         <Divider />
